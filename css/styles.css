@@ -20,6 +20,9 @@
   --radius: 2px;
   --header-h: 4.25rem;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --reveal-distance: 2.25rem;
+  --reveal-duration: 0.95s;
+  --reveal-stagger: 0.12s;
 }
 
 *,
@@ -702,11 +705,15 @@ img {
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.65s var(--ease);
   margin-top: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .property-detail-wrap.is-open {
   grid-template-rows: 1fr;
   margin-top: 2rem;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .property-detail-sizer {
@@ -1265,9 +1272,113 @@ img {
   outline-offset: 2px;
 }
 
+/* Scroll reveal animations (content visible by default; hidden only before .is-visible) */
+.js-scroll-reveal .reveal:not(.is-visible) {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+}
+
+.js-scroll-reveal .reveal {
+  transition:
+    opacity var(--reveal-duration) var(--ease),
+    transform var(--reveal-duration) var(--ease);
+  transition-delay: var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.js-scroll-reveal .reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.js-scroll-reveal .reveal--hero {
+  --reveal-distance: 1.75rem;
+  --reveal-duration: 0.7s;
+}
+
+.hero-content > .reveal--hero:nth-child(1) {
+  --reveal-delay: 0s;
+}
+
+.hero-content > .reveal--hero:nth-child(2) {
+  --reveal-delay: 0.2s;
+}
+
+.hero-content > .reveal--hero:nth-child(3) {
+  --reveal-delay: 0.4s;
+}
+
+.hero-content > .reveal--hero:nth-child(4) {
+  --reveal-delay: 0.6s;
+}
+
+.js-scroll-reveal .about-panel.reveal {
+  transform: translate3d(1.5rem, var(--reveal-distance), 0);
+}
+
+.js-scroll-reveal .about-panel.reveal.is-visible {
+  transform: translate3d(0, 0, 0);
+}
+
+.js-scroll-reveal .reveal-group .reveal {
+  transition-delay: calc(var(--reveal-stagger) * var(--reveal-index, 0));
+}
+
+.js-scroll-reveal .property-grid.reveal-group.is-visible .property-card.reveal:nth-child(1) {
+  --reveal-index: 0;
+}
+
+.js-scroll-reveal .property-grid.reveal-group.is-visible .property-card.reveal:nth-child(2) {
+  --reveal-index: 1;
+}
+
+.js-scroll-reveal .property-grid.reveal-group.is-visible .property-card.reveal:nth-child(3) {
+  --reveal-index: 2;
+}
+
+.js-scroll-reveal .property-grid.reveal-group.is-visible .property-card.reveal:nth-child(4) {
+  --reveal-index: 3;
+}
+
+.js-scroll-reveal .property-grid.reveal-group.is-visible .property-card.reveal:nth-child(5) {
+  --reveal-index: 4;
+}
+
+.js-scroll-reveal .contact-cards.reveal-group.is-visible .contact-card.reveal:nth-child(1) {
+  --reveal-index: 0;
+}
+
+.js-scroll-reveal .contact-cards.reveal-group.is-visible .contact-card.reveal:nth-child(2) {
+  --reveal-index: 1;
+}
+
+.js-scroll-reveal .about-stats.reveal-group.is-visible .reveal:nth-child(1) {
+  --reveal-index: 0;
+}
+
+.js-scroll-reveal .about-stats.reveal-group.is-visible .reveal:nth-child(2) {
+  --reveal-index: 1;
+}
+
+.js-scroll-reveal .about-stats.reveal-group.is-visible .reveal:nth-child(3) {
+  --reveal-index: 2;
+}
+
+.js-scroll-reveal .stat-number.is-counting {
+  display: inline-block;
+  min-width: 2.5ch;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .js-scroll-reveal .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
   }
 
   .property-detail-wrap,
@@ -1276,7 +1387,9 @@ img {
   .property-gallery-thumb,
   .gallery-modal,
   .gallery-modal-panel,
-  .gallery-main-image {
+  .gallery-main-image,
+  .reveal,
+  .reveal--hero {
     transition: none;
   }
 }

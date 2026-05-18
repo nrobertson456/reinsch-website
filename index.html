@@ -10,6 +10,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    html:not(.is-ready) body {
+      opacity: 0;
+    }
+
+    html.is-ready body {
+      opacity: 1;
+      transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html:not(.is-ready) body {
+        opacity: 1;
+      }
+
+      html.is-ready body {
+        transition: none;
+      }
+    }
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -36,10 +56,10 @@
     <section class="hero" aria-labelledby="hero-heading">
       <div class="hero-bg" aria-hidden="true"></div>
       <div class="hero-content">
-        <p class="hero-eyebrow">Arlington, Virginia</p>
-        <h1 id="hero-heading" class="hero-title">E.G. Reinsch Companies</h1>
-        <p class="hero-tagline">Thoughtfully managed apartment homes, rooted in family values and a commitment to our neighbors.</p>
-        <div class="hero-actions">
+        <p class="hero-eyebrow reveal reveal--hero">Arlington, Virginia</p>
+        <h1 id="hero-heading" class="hero-title reveal reveal--hero">E.G. Reinsch Companies</h1>
+        <p class="hero-tagline reveal reveal--hero">Thoughtfully managed apartment homes, rooted in family values and a commitment to our neighbors.</p>
+        <div class="hero-actions reveal reveal--hero">
           <a class="btn btn-primary" href="#properties">View our communities</a>
           <a class="btn btn-outline" href="#contact">Get in touch</a>
         </div>
@@ -51,15 +71,15 @@
 
     <section class="section properties" id="properties" aria-labelledby="properties-heading">
       <div class="container">
-        <header class="section-header">
+        <header class="section-header reveal">
           <p class="section-eyebrow">Communities</p>
           <h2 id="properties-heading" class="section-title">Our Properties</h2>
           <p class="section-lede">Five distinctive addresses along Columbia Pike and in North Arlington—each maintained with care and respect for the people who call them home.</p>
         </header>
 
-        <div class="property-grid">
+        <div class="property-grid reveal-group">
           <article
-            class="property-card"
+            class="property-card reveal"
             data-property="dorchester-towers"
             tabindex="0"
             role="button"
@@ -87,7 +107,7 @@
           </article>
 
           <article
-            class="property-card"
+            class="property-card reveal"
             data-property="dorchester-apartments"
             tabindex="0"
             role="button"
@@ -115,7 +135,7 @@
           </article>
 
           <article
-            class="property-card"
+            class="property-card reveal"
             data-property="oakland-apartments"
             tabindex="0"
             role="button"
@@ -143,7 +163,7 @@
           </article>
 
           <article
-            class="property-card"
+            class="property-card reveal"
             data-property="westmont-gardens"
             tabindex="0"
             role="button"
@@ -171,7 +191,7 @@
           </article>
 
           <article
-            class="property-card property-card--featured"
+            class="property-card property-card--featured reveal"
             data-property="arlington-boulevard"
             tabindex="0"
             role="button"
@@ -240,24 +260,24 @@
           </div>
         </div>
 
-        <p class="properties-note">Availability and pricing change with the market. Call or email for current openings and exact rents.</p>
+        <p class="properties-note reveal">Availability and pricing change with the market. Call or email for current openings and exact rents.</p>
       </div>
     </section>
 
     <section class="section about" id="about" aria-labelledby="about-heading">
       <div class="about-inner">
-        <div class="about-content">
+        <div class="about-content reveal">
           <p class="section-eyebrow section-eyebrow--on-dark">Our story</p>
           <h2 id="about-heading" class="section-title section-title--on-dark">A family tradition of stewardship</h2>
           <p class="about-text">For more than seven decades, E.G. Reinsch Companies has been a steady presence in Arlington—owned and operated by the same family, with the same belief that good housing is built on trust, consistency, and genuine care for residents.</p>
           <p class="about-text">We are not a distant corporation. We live and work in this community. That means attentive maintenance, fair dealing, and a long-term outlook: we intend to be here for the next generation, too.</p>
-          <ul class="about-stats" role="list">
-            <li><span class="stat-number">70+</span> <span class="stat-label">years in Arlington</span></li>
-            <li><span class="stat-number">5</span> <span class="stat-label">communities</span></li>
-            <li><span class="stat-number">1</span> <span class="stat-label">family name on the door</span></li>
+          <ul class="about-stats reveal-group" id="about-stats" role="list">
+            <li class="reveal"><span class="stat-number" data-count="70" data-suffix="+">0</span> <span class="stat-label">years in Arlington</span></li>
+            <li class="reveal"><span class="stat-number" data-count="5">0</span> <span class="stat-label">communities</span></li>
+            <li class="reveal"><span class="stat-number" data-count="1">0</span> <span class="stat-label">family name on the door</span></li>
           </ul>
         </div>
-        <div class="about-panel" aria-hidden="true">
+        <div class="about-panel reveal" aria-hidden="true">
           <blockquote class="about-quote">
             <p>“We measure success by the relationships we keep—not quarterly reports.”</p>
           </blockquote>
@@ -267,17 +287,17 @@
 
     <section class="section contact" id="contact" aria-labelledby="contact-heading">
       <div class="container container--narrow">
-        <header class="section-header section-header--center">
+        <header class="section-header section-header--center reveal">
           <p class="section-eyebrow">Reach us</p>
           <h2 id="contact-heading" class="section-title">Contact</h2>
           <p class="section-lede">Whether you are looking for your next home or have a question about one of our buildings, our team is glad to help.</p>
         </header>
-        <div class="contact-cards">
-          <a class="contact-card" href="tel:+17039203600">
+        <div class="contact-cards reveal-group">
+          <a class="contact-card reveal" href="tel:+17039203600">
             <span class="contact-card-label">Phone</span>
             <span class="contact-card-value">(703) 920-3600</span>
           </a>
-          <a class="contact-card" href="mailto:info@egreinsch.com">
+          <a class="contact-card reveal" href="mailto:info@egreinsch.com">
             <span class="contact-card-label">Email</span>
             <span class="contact-card-value">info@egreinsch.com</span>
           </a>
@@ -322,7 +342,7 @@
   </div>
 
   <footer class="site-footer">
-    <div class="footer-inner">
+    <div class="footer-inner reveal">
       <p class="footer-brand">E.G. Reinsch Companies</p>
       <p class="footer-copy">Family-owned apartment management · Arlington, Virginia</p>
       <p class="footer-legal">&copy; <span id="year"></span> E.G. Reinsch Companies. All rights reserved.</p>

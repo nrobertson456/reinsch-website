@@ -8,6 +8,216 @@
     yearEl.textContent = String(new Date().getFullYear());
   }
 
+  /* —— Scroll reveal & stat count-up —— */
+  var panelWrapEarly = document.getElementById("property-detail-panel");
+  if (panelWrapEarly) {
+    panelWrapEarly.classList.remove("is-open");
+    panelWrapEarly.setAttribute("aria-hidden", "true");
+  }
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function assignRevealIndices(group) {
+    var items = group.querySelectorAll(":scope > .reveal");
+    items.forEach(function (item, i) {
+      item.style.setProperty("--reveal-index", String(i));
+    });
+  }
+
+  function animateStatNumber(el) {
+    if (!el || el.dataset.counted === "true") return;
+
+    var target = parseInt(el.getAttribute("data-count"), 10);
+    if (isNaN(target)) return;
+
+    var suffix = el.getAttribute("data-suffix") || "";
+    el.dataset.counted = "true";
+    el.classList.add("is-counting");
+
+    if (prefersReducedMotion()) {
+      el.textContent = String(target) + suffix;
+      return;
+    }
+
+    var duration = 2200;
+    var startTime = null;
+
+    function tick(now) {
+      if (!startTime) startTime = now;
+      var progress = Math.min((now - startTime) / duration, 1);
+      var value = Math.round(easeOutCubic(progress) * target);
+      el.textContent = String(value) + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = String(target) + suffix;
+        el.classList.remove("is-counting");
+      }
+    }
+
+    el.textContent = "0" + suffix;
+    requestAnimationFrame(tick);
+  }
+
+  function animateStatsInGroup(group) {
+    group.querySelectorAll(".stat-number[data-count]").forEach(function (stat, i) {
+      window.setTimeout(function () {
+        animateStatNumber(stat);
+      }, i * 180);
+    });
+  }
+
+  function revealElement(el) {
+    if (!el || el.classList.contains("is-visible")) return;
+    el.classList.add("is-visible");
+
+    if (el.classList.contains("reveal-group")) {
+      el.querySelectorAll(":scope > .reveal").forEach(function (child) {
+        child.classList.add("is-visible");
+      });
+    }
+  }
+
+  function initPageFadeIn() {
+    if (prefersReducedMotion()) {
+      document.documentElement.classList.add("is-ready");
+      return;
+    }
+
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        document.documentElement.classList.add("is-ready");
+      });
+    });
+  }
+
+  function initStatsCountUp() {
+    var statsGroup = document.getElementById("about-stats");
+    if (!statsGroup) return;
+
+    var statEls = statsGroup.querySelectorAll(".stat-number[data-count]");
+    statEls.forEach(function (el) {
+      if (el.dataset.counted === "true") return;
+      var suffix = el.getAttribute("data-suffix") || "";
+      el.textContent = "0" + suffix;
+    });
+
+    var statsObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          if (prefersReducedMotion()) {
+            statEls.forEach(function (el) {
+              var target = parseInt(el.getAttribute("data-count"), 10);
+              var suffix = el.getAttribute("data-suffix") || "";
+              el.textContent = String(target) + suffix;
+              el.dataset.counted = "true";
+            });
+          } else {
+            animateStatsInGroup(statsGroup);
+          }
+          statsObserver.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.45,
+        rootMargin: "0px 0px -10% 0px",
+      }
+    );
+
+    statsObserver.observe(statsGroup);
+  }
+
+  function initHeroReveal() {
+    var heroItems = document.querySelectorAll(".reveal--hero");
+    if (!heroItems.length) return;
+
+    if (prefersReducedMotion()) {
+      heroItems.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    heroItems.forEach(function (el) {
+      el.classList.remove("is-visible");
+    });
+
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        heroItems.forEach(function (el) {
+          el.classList.add("is-visible");
+        });
+      });
+    });
+  }
+
+  function revealFailsafe() {
+    document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (el) {
+      el.classList.add("is-visible");
+    });
+    document.querySelectorAll(".reveal-group:not(.is-visible)").forEach(function (group) {
+      group.classList.add("is-visible");
+      group.querySelectorAll(":scope > .reveal").forEach(function (child) {
+        child.classList.add("is-visible");
+      });
+    });
+  }
+
+  function initScrollReveals() {
+    var reduced = prefersReducedMotion();
+    var revealEls = document.querySelectorAll(".reveal:not(.reveal--hero)");
+    var groups = document.querySelectorAll(".reveal-group");
+
+    groups.forEach(assignRevealIndices);
+
+    if (reduced) {
+      revealEls.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      groups.forEach(function (group) {
+        revealElement(group);
+      });
+      return;
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          revealElement(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.15,
+        rootMargin: "0px 0px -6% 0px",
+      }
+    );
+
+    revealEls.forEach(function (el) {
+      if (el.closest(".reveal-group")) return;
+      observer.observe(el);
+    });
+
+    groups.forEach(function (group) {
+      observer.observe(group);
+    });
+  }
+
+  initPageFadeIn();
+  document.documentElement.classList.add("js-scroll-reveal");
+  initHeroReveal();
+  initScrollReveals();
+  initStatsCountUp();
+  window.setTimeout(revealFailsafe, 2500);
+
   function setScrolled() {
     if (!header) return;
     header.classList.toggle("is-scrolled", window.scrollY > 24);
@@ -198,10 +408,6 @@
 
   var currentId = null;
   var swapTimer = null;
-
-  function prefersReducedMotion() {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }
 
   function buildMapsUrl(query) {
     return (
