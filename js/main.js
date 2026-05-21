@@ -403,8 +403,11 @@
   var detailAddress = document.getElementById("property-detail-address");
   var detailMaps = document.getElementById("property-detail-maps");
   var detailEmail = document.getElementById("property-detail-email");
+  var detailApply = document.getElementById("property-detail-apply");
   var detailClose = document.getElementById("property-detail-close");
   var cards = document.querySelectorAll(".property-card[data-property]");
+  var galleryModal = document.getElementById("gallery-modal");
+  var applicationModal = document.getElementById("application-modal");
 
   var currentId = null;
   var swapTimer = null;
@@ -462,6 +465,11 @@
       "aria-label",
       "Email about " + data.name
     );
+
+    if (detailApply) {
+      detailApply.setAttribute("data-property", id);
+      detailApply.setAttribute("aria-label", "Apply now for " + data.name);
+    }
   }
 
   function setCardsActive(id) {
@@ -554,6 +562,17 @@
   }
 
   if (panelWrap && cards.length && detailClose) {
+    if (detailApply) {
+      detailApply.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var id = currentId || detailApply.getAttribute("data-property");
+        var data = id && PROPERTY_DATA[id];
+        if (data) {
+          openApplication(data.name, detailApply);
+        }
+      });
+    }
+
     cards.forEach(function (card) {
       card.addEventListener("click", function () {
         var id = card.getAttribute("data-property");
@@ -600,6 +619,7 @@
 
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
+      if (applicationModal && applicationModal.classList.contains("is-open")) return;
       if (galleryModal && galleryModal.classList.contains("is-open")) return;
       if (!panelWrap || !panelWrap.classList.contains("is-open")) return;
       var toFocus = document.querySelector(".property-card.is-active");
@@ -607,8 +627,165 @@
     });
   }
 
+  /* —— Rental application modal —— */
+  var applicationForm = document.getElementById("rental-application-form");
+  var applicationThanks = document.getElementById("application-thanks");
+  var applicationPropertyField = document.getElementById("app-desired-property");
+  var applicationPropertySubtitle = document.getElementById("application-modal-property");
+  var applicationCloseBtn = document.getElementById("application-modal-close");
+  var applicationThanksClose = document.getElementById("application-thanks-close");
+
+  var applicationTriggerEl = null;
+
+  function releaseBodyScrollLock() {
+    var navOpen = header && header.classList.contains("nav-open");
+    var galleryOpen = galleryModal && galleryModal.classList.contains("is-open");
+    var appOpen =
+      applicationModal && applicationModal.classList.contains("is-open");
+    if (!navOpen && !galleryOpen && !appOpen) {
+      document.body.style.overflow = "";
+    }
+  }
+
+  function resetApplicationView() {
+    if (applicationForm) {
+      applicationForm.reset();
+      applicationForm.hidden = false;
+    }
+    if (applicationThanks) {
+      applicationThanks.hidden = true;
+    }
+  }
+
+  function openApplication(propertyName, trigger) {
+    if (!applicationModal || !propertyName) return;
+
+    applicationTriggerEl = trigger || null;
+    resetApplicationView();
+
+    if (applicationPropertyField) {
+      applicationPropertyField.value = propertyName;
+    }
+    if (applicationPropertySubtitle) {
+      applicationPropertySubtitle.textContent = propertyName;
+    }
+
+    applicationModal.removeAttribute("hidden");
+    applicationModal.setAttribute("aria-hidden", "false");
+    applicationModal.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+
+    window.requestAnimationFrame(function () {
+      var first = applicationForm && applicationForm.querySelector("input, select, textarea");
+      if (first) {
+        first.focus();
+      } else if (applicationCloseBtn) {
+        applicationCloseBtn.focus();
+      }
+    });
+  }
+
+  function closeApplication(opts) {
+    opts = opts || {};
+    if (!applicationModal || !applicationModal.classList.contains("is-open")) return;
+
+    applicationModal.classList.remove("is-open");
+    applicationModal.setAttribute("aria-hidden", "true");
+    applicationModal.setAttribute("hidden", "");
+    resetApplicationView();
+    releaseBodyScrollLock();
+
+    if (opts.returnFocus && applicationTriggerEl) {
+      applicationTriggerEl.focus();
+    }
+    applicationTriggerEl = null;
+  }
+
+  function showApplicationThanks() {
+    if (applicationForm) {
+      applicationForm.hidden = true;
+    }
+    if (applicationThanks) {
+      applicationThanks.hidden = false;
+    }
+    if (applicationThanksClose) {
+      applicationThanksClose.focus();
+    }
+  }
+
+  function bindApplyButton(btn, propertyId) {
+    if (!btn || !propertyId || !PROPERTY_DATA[propertyId]) return;
+    var data = PROPERTY_DATA[propertyId];
+    btn.setAttribute("data-property", propertyId);
+    btn.setAttribute("aria-label", "Apply now for " + data.name);
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      openApplication(data.name, btn);
+    });
+  }
+
+  function initPropertyApplyButtons() {
+    cards.forEach(function (card) {
+      var id = card.getAttribute("data-property");
+      if (!id || !PROPERTY_DATA[id]) return;
+
+      var apply = card.querySelector(".property-card-apply");
+      if (!apply) {
+        apply = document.createElement("button");
+        apply.type = "button";
+        apply.className = "btn btn-apply btn-block property-card-apply property-apply-btn";
+        apply.textContent = "Apply Now";
+        var hint = card.querySelector(".property-card-hint");
+        if (hint) {
+          card.insertBefore(apply, hint);
+        } else {
+          card.appendChild(apply);
+        }
+      }
+
+      bindApplyButton(apply, id);
+    });
+  }
+
+  if (cards.length) {
+    initPropertyApplyButtons();
+  }
+
+  if (applicationModal && applicationForm) {
+    applicationForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      showApplicationThanks();
+    });
+
+    if (applicationCloseBtn) {
+      applicationCloseBtn.addEventListener("click", function () {
+        closeApplication({ returnFocus: true });
+      });
+    }
+
+    if (applicationThanksClose) {
+      applicationThanksClose.addEventListener("click", function () {
+        closeApplication({ returnFocus: true });
+      });
+    }
+
+    applicationModal.querySelectorAll("[data-application-close]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        closeApplication({ returnFocus: true });
+      });
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (!applicationModal.classList.contains("is-open")) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeApplication({ returnFocus: true });
+      }
+    });
+  }
+
   /* —— Property photo gallery modal —— */
-  var galleryModal = document.getElementById("gallery-modal");
   var galleryTitle = document.getElementById("gallery-modal-title");
   var galleryMainImage = document.getElementById("gallery-main-image");
   var galleryCaptionLabel = document.getElementById("gallery-caption-label");
@@ -739,9 +916,7 @@
     galleryModal.setAttribute("aria-hidden", "true");
     galleryModal.setAttribute("hidden", "");
 
-    if (!header || !header.classList.contains("nav-open")) {
-      document.body.style.overflow = "";
-    }
+    releaseBodyScrollLock();
 
     galleryItems = [];
     galleryIndex = 0;
@@ -799,6 +974,7 @@
 
     document.addEventListener("keydown", function (e) {
       if (!galleryModal.classList.contains("is-open")) return;
+      if (applicationModal && applicationModal.classList.contains("is-open")) return;
 
       if (e.key === "Escape") {
         e.preventDefault();

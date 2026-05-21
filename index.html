@@ -250,6 +250,7 @@
                       <a class="property-detail-maps btn btn-maps" id="property-detail-maps" href="#" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
                     </div>
                     <div class="property-detail-actions">
+                      <button type="button" class="btn btn-apply btn-block property-apply-btn" id="property-detail-apply">Apply Now</button>
                       <a class="btn btn-primary btn-block" id="property-detail-call" href="tel:+17039203600">Call (703) 920-3600</a>
                       <a class="btn btn-secondary btn-block" id="property-detail-email" href="mailto:info@egreinsch.com">Email us</a>
                     </div>
@@ -330,6 +331,203 @@
       </div>
     </section>
   </main>
+
+  <div class="application-modal" id="application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title" aria-hidden="true" hidden>
+    <div class="application-modal-backdrop" data-application-close tabindex="-1" aria-hidden="true"></div>
+    <div class="application-modal-panel">
+      <header class="application-modal-header">
+        <div class="application-modal-heading">
+          <p class="application-modal-eyebrow">Rental application</p>
+          <h2 class="application-modal-title" id="application-modal-title">Apply Now</h2>
+          <p class="application-modal-subtitle" id="application-modal-property"></p>
+        </div>
+        <button type="button" class="application-modal-close" id="application-modal-close" aria-label="Close application form">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+      <div class="application-modal-body">
+        <div class="application-thanks" id="application-thanks" hidden>
+          <div class="application-thanks-icon" aria-hidden="true"></div>
+          <h3 class="application-thanks-title">Thank you!</h3>
+          <p class="application-thanks-text">We will review your application and contact you within 2 business days.</p>
+          <button type="button" class="btn btn-apply" id="application-thanks-close">Close</button>
+        </div>
+        <form class="rental-application-form" id="rental-application-form" novalidate>
+          <fieldset class="application-section">
+            <legend class="application-section-title">Section 1 — Personal Information</legend>
+            <div class="application-fields">
+              <div class="application-field application-field--full">
+                <label for="app-full-name">Full name</label>
+                <input type="text" id="app-full-name" name="fullName" autocomplete="name" required />
+              </div>
+              <div class="application-field">
+                <label for="app-dob">Date of birth</label>
+                <input type="date" id="app-dob" name="dateOfBirth" required />
+              </div>
+              <div class="application-field">
+                <label for="app-id-type">Government ID type</label>
+                <select id="app-id-type" name="idType" required>
+                  <option value="">Select…</option>
+                  <option value="drivers-license">Driver's license</option>
+                  <option value="passport">Passport</option>
+                  <option value="state-id">State ID</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="application-field">
+                <label for="app-email">Email address</label>
+                <input type="email" id="app-email" name="email" autocomplete="email" required />
+              </div>
+              <div class="application-field">
+                <label for="app-phone">Phone number</label>
+                <input type="tel" id="app-phone" name="phone" autocomplete="tel" required />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="application-section">
+            <legend class="application-section-title">Section 2 — Current Living Situation</legend>
+            <div class="application-fields">
+              <div class="application-field application-field--full">
+                <label for="app-current-address">Current address</label>
+                <input type="text" id="app-current-address" name="currentAddress" autocomplete="street-address" required />
+              </div>
+              <div class="application-field">
+                <label for="app-time-at-address">How long at current address</label>
+                <input type="text" id="app-time-at-address" name="timeAtAddress" placeholder="e.g. 2 years" required />
+              </div>
+              <div class="application-field">
+                <label for="app-current-rent">Current monthly rent</label>
+                <input type="text" id="app-current-rent" name="currentRent" placeholder="e.g. $1,800" required />
+              </div>
+              <div class="application-field application-field--full">
+                <label for="app-reason-moving">Reason for moving</label>
+                <textarea id="app-reason-moving" name="reasonMoving" rows="3" required></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="application-section">
+            <legend class="application-section-title">Section 3 — Employment &amp; Income</legend>
+            <div class="application-fields">
+              <div class="application-field">
+                <label for="app-employment-status">Employment status</label>
+                <select id="app-employment-status" name="employmentStatus" required>
+                  <option value="">Select…</option>
+                  <option value="employed">Employed</option>
+                  <option value="self-employed">Self-employed</option>
+                  <option value="student">Student</option>
+                  <option value="retired">Retired</option>
+                </select>
+              </div>
+              <div class="application-field">
+                <label for="app-employer">Employer name</label>
+                <input type="text" id="app-employer" name="employer" required />
+              </div>
+              <div class="application-field">
+                <label for="app-income">Annual income</label>
+                <input type="text" id="app-income" name="annualIncome" placeholder="e.g. $75,000" required />
+              </div>
+              <div class="application-field">
+                <label for="app-years-job">Years at current job</label>
+                <input type="text" id="app-years-job" name="yearsAtJob" placeholder="e.g. 3 years" required />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="application-section">
+            <legend class="application-section-title">Section 4 — Rental Preferences</legend>
+            <div class="application-fields">
+              <div class="application-field application-field--full">
+                <label for="app-desired-property">Desired property</label>
+                <input type="text" id="app-desired-property" name="desiredProperty" readonly required />
+              </div>
+              <div class="application-field">
+                <label for="app-move-in">Preferred move-in date</label>
+                <input type="date" id="app-move-in" name="moveInDate" required />
+              </div>
+              <div class="application-field">
+                <label for="app-bedrooms">Bedroom preference</label>
+                <select id="app-bedrooms" name="bedroomPreference" required>
+                  <option value="">Select…</option>
+                  <option value="studio">Studio</option>
+                  <option value="1">1 bedroom</option>
+                  <option value="2">2 bedroom</option>
+                  <option value="3">3 bedroom</option>
+                  <option value="any">No preference</option>
+                </select>
+              </div>
+              <div class="application-field">
+                <label for="app-occupants">Number of occupants</label>
+                <input type="number" id="app-occupants" name="occupants" min="1" max="12" required />
+              </div>
+              <div class="application-field">
+                <label for="app-pets">Pets</label>
+                <select id="app-pets" name="pets" required>
+                  <option value="">Select…</option>
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="application-section">
+            <legend class="application-section-title">Section 5 — References</legend>
+            <div class="application-fields">
+              <div class="application-field">
+                <label for="app-landlord-name">Previous landlord name</label>
+                <input type="text" id="app-landlord-name" name="landlordName" required />
+              </div>
+              <div class="application-field">
+                <label for="app-landlord-phone">Previous landlord phone</label>
+                <input type="tel" id="app-landlord-phone" name="landlordPhone" required />
+              </div>
+              <div class="application-field">
+                <label for="app-ref-name">Personal reference name</label>
+                <input type="text" id="app-ref-name" name="referenceName" required />
+              </div>
+              <div class="application-field">
+                <label for="app-ref-phone">Personal reference phone</label>
+                <input type="tel" id="app-ref-phone" name="referencePhone" required />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="application-section">
+            <legend class="application-section-title">Section 6 — Additional Information</legend>
+            <div class="application-fields">
+              <div class="application-field">
+                <label for="app-evicted">Have you ever been evicted?</label>
+                <select id="app-evicted" name="evicted" required>
+                  <option value="">Select…</option>
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+              <div class="application-field">
+                <label for="app-bankruptcy">Have you ever filed for bankruptcy?</label>
+                <select id="app-bankruptcy" name="bankruptcy" required>
+                  <option value="">Select…</option>
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+              <div class="application-field application-field--full">
+                <label for="app-notes">Additional notes</label>
+                <textarea id="app-notes" name="additionalNotes" rows="4"></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <p class="application-demo-note">Demo form only — your information is not submitted or stored.</p>
+          <div class="application-form-actions">
+            <button type="submit" class="btn btn-apply btn-block">Submit Application</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <div class="gallery-modal" id="gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title" aria-hidden="true" hidden>
     <div class="gallery-modal-backdrop" data-gallery-close tabindex="-1" aria-hidden="true"></div>
